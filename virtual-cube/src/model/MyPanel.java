@@ -47,6 +47,7 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 	public MyPanel() {
 		super();
 		setSize(width, height);
+		setFocusable(true);
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -229,6 +230,9 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 	}
 
 	public void mousePressed(MouseEvent e) {
+		if (!hasFocus()) {
+			requestFocus();
+		}
 		drag[0] = e.getButton();
 		drag[1] = e.getX();
 		drag[2] = e.getY();
