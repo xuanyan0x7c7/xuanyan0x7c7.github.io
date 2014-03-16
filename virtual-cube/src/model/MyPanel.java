@@ -2,6 +2,7 @@ package model;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -13,6 +14,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -45,6 +48,8 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 	public ThreadQueue thread_queue;
 	private Thread twist_thread;
 
+	private List<Class<? extends Puzzle>> puzzle_list = new ArrayList<Class<? extends Puzzle>>();
+
 	public MyPanel() {
 		super();
 		setSize(width, height);
@@ -67,7 +72,11 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 		g2.scale(width, -height);
 		g2.setStroke(new BasicStroke((float) 0.001));
 		timer = new MyTimer(statusbar);
-		createPuzzle(Cube.class);
+		puzzle_list.add(Cube.class);
+		puzzle_list.add(Pyraminx.class);
+		puzzle_list.add(Megaminx.class);
+		puzzle_list.add(CrazyCube444.class);
+		createPuzzle(puzzle_list.get(0));
 		count = 0;
 		relay_layer = relay_n = false;
 		new Thread(timer).start();
@@ -89,26 +98,13 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 		int key = e.getExtendedKeyCode();
 		switch (key) {
 		case KeyEvent.VK_UP:
-			if (puzzle_type == Cube.class) {
-				createPuzzle(Pyraminx.class);
-			} else if (puzzle_type == Pyraminx.class) {
-				createPuzzle(Megaminx.class);
-			} else if (puzzle_type == Megaminx.class) {
-				createPuzzle(CrazyCube444.class);
-			} else if (puzzle_type == CrazyCube444.class) {
-				createPuzzle(Cube.class);
-			}
+			int x = puzzle_list.indexOf(puzzle_type);
+			createPuzzle(puzzle_list.get((x + 1) % puzzle_list.size()));
 			break;
 		case KeyEvent.VK_DOWN:
-			if (puzzle_type == Cube.class) {
-				createPuzzle(CrazyCube444.class);
-			} else if (puzzle_type == Pyraminx.class) {
-				createPuzzle(Cube.class);
-			} else if (puzzle_type == Megaminx.class) {
-				createPuzzle(Pyraminx.class);
-			} else if (puzzle_type == CrazyCube444.class) {
-				createPuzzle(Megaminx.class);
-			}
+			x = puzzle_list.indexOf(puzzle_type);
+			createPuzzle(puzzle_list.get((x + puzzle_list.size() - 1)
+					% puzzle_list.size()));
 			break;
 		case KeyEvent.VK_LEFT:
 			int new_size = puzzle.getSmallerSize(puzzle_size);
@@ -153,13 +149,15 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 			repaint();
 			break;
 		case KeyEvent.VK_F1:
-			relay_layer = true;
-			relay_n = false;
-			timer.setPrefixString("");
-			createPuzzle(puzzle_type, 2);
-			puzzle.scramble();
-			changePuzzle();
-			timer.startInspection();
+			if (puzzle_type == Cube.class) {
+				relay_layer = true;
+				relay_n = false;
+				timer.setPrefixString("");
+				createPuzzle(puzzle_type, 2);
+				puzzle.scramble();
+				changePuzzle();
+				timer.startInspection();
+			}
 			break;
 		case KeyEvent.VK_F2:
 			relay_layer = false;
@@ -306,7 +304,8 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 	public boolean nextPuzzle() {
 		if (relay_layer) {
 			if (puzzle_size < 7) {
-				createPuzzle(puzzle_type, ++puzzle_size);
+				createPuzzle(puzzle_type,
+						puzzle_size = puzzle.getBiggerSize(puzzle_size));
 				puzzle.preScramble().scramble();
 				changePuzzle();
 				return true;
