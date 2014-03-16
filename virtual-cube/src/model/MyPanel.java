@@ -31,6 +31,7 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener,
 
 	private final int width = 600;
 	private final int height = 600;
+	static final Font default_font = new Font(null, Font.TRUETYPE_FONT, 24);
 	private BufferedImage buf;
 	private Graphics2D g2;
 	public Class<? extends Puzzle> puzzle_type;

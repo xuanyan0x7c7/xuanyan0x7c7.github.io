@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 @SuppressWarnings("serial")
 public class MyFrame extends JFrame {
 
-	static final Font default_font = new Font(null, Font.TRUETYPE_FONT, 24);
 	private MyPanel panel;
 
 	public MyFrame() {
