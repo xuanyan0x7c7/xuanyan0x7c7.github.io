@@ -80,10 +80,10 @@ window.addEventListener("load", function() {
 	magics.forEach(function(magic) {
 		select.options.add(new Option(magic.text, magic.value));
 		if (magic.init_display === true) {
-			select.value = select.value || magic.value;
+			select.value = magic.value;
 		}
 	});
-	var current_animation = animation[select.value || magics[0].value]();
+	var current_animation = animation[select.value]();
 	resize();
 	current_animation.animate();
 
