@@ -22,7 +22,8 @@ window.addEventListener("load", function() {
 			},
 			animation: Magic.prototype.toCube,
 			text: "Rubik's Magic to cube",
-			value: "magic2cube"
+			value: "magic2cube",
+			init_display: true
 		},
 		{
 			create: function(size) {
@@ -74,14 +75,17 @@ window.addEventListener("load", function() {
 			}, get_stroke_width, clear_screen);
 		};
 	});
-	var current_animation = animation[magics[0].value]();
-	resize();
-	current_animation.animate();
 
 	var select = document.getElementById("select");
 	magics.forEach(function(magic) {
 		select.options.add(new Option(magic.text, magic.value));
+		if (magic.init_display === true) {
+			select.value = select.value || magic.value;
+		}
 	});
+	var current_animation = animation[select.value || magics[0].value]();
+	resize();
+	current_animation.animate();
 
 	select.addEventListener("change", function(event) {
 		current_animation.stop();
