@@ -811,16 +811,6 @@ MasterMagic.prototype.solveBeginner = function(context, inspector, width, clear_
 		this.draw(context, inspector, width, clear_screen);
 	}.bind(this), 60);
 
-	list.push(function() {
-		[5, 8].forEach(function(index) {
-			this.brick[index].skew("x->z", 2 * this.height / this.width / 5);
-		}, this);
-		[6, 7].forEach(function(index) {
-			this.brick[index].translate(0, 0, -4 * this.height / 5);
-		}, this);
-		this.draw(context, inspector, width, clear_screen);
-	}.bind(this), 5);
-
 	list.push(function() {}, 1, 100);
 
 	list.push(function(step) {
@@ -830,10 +820,10 @@ MasterMagic.prototype.solveBeginner = function(context, inspector, width, clear_
 			.translate(0, 0, -this.height)
 			.rotate(new Vertex(0, -1, 0), Math.PI / 60)
 			.translate(0, 0, this.height);
-		this.brick[8]
-			.translate(2 * this.width, 0, 0)
-			.skew("x->z", -2 * this.height / this.width / 60)
-			.translate(-2 * this.width, 0, 0);
+		this.brick[5].skew("x->z", 2 * this.height / this.width / 60);
+		[6, 7, 8].forEach(function(index) {
+			this.brick[index].translate(0, 0, -4 * this.height / 60);
+		}, this);
 		[9, 10].forEach(function(index) {
 			this.brick[index]
 				.translate(0, 0, -3 * this.height)
