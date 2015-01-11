@@ -139,6 +139,20 @@ var MasterMagic = function(width, height) {
 		this.brick[index].facelet[1].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, -height));
 	}, this);
 
+	this.brick[6].facelet[0].push(new Polygon([
+		new Vertex(0.2 * width, 0.2 * width, 0),
+		new Vertex(0.2 * width, 0.8 * width, 0),
+		new Vertex(0.8 * width, 0.8 * width, 0),
+		new Vertex(0.8 * width, 0.2 * width, 0)
+	], null, "yellow").translate(0, 0, height));
+
+	this.brick[11].facelet[1].push(new Polygon([
+		new Vertex(0.2 * width, -0.2 * width, 0),
+		new Vertex(0.2 * width, -0.8 * width, 0),
+		new Vertex(0.8 * width, -0.8 * width, 0),
+		new Vertex(0.8 * width, -0.2 * width, 0)
+	], null, "yellow").translate(0, 0, -height));
+
 	this.brick[0].translate(-width, -5 * width, 0);
 	this.brick[1].translate(-width, -3 * width, 0);
 	this.brick[2].translate(-width, -width, 0);

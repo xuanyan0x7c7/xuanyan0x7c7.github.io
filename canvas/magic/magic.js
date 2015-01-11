@@ -139,6 +139,20 @@ var Magic = function(width, height) {
 		this.brick[index].facelet[1].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, -height));
 	}, this);
 
+	this.brick[4].facelet[0].push(new Polygon([
+		new Vertex(0.2 * width, 0.2 * width, 0),
+		new Vertex(0.2 * width, 0.8 * width, 0),
+		new Vertex(0.8 * width, 0.8 * width, 0),
+		new Vertex(0.8 * width, 0.2 * width, 0)
+	], null, "yellow").translate(0, 0, height));
+
+	this.brick[7].facelet[1].push(new Polygon([
+		new Vertex(0.2 * width, -0.2 * width, 0),
+		new Vertex(0.2 * width, -0.8 * width, 0),
+		new Vertex(0.8 * width, -0.8 * width, 0),
+		new Vertex(0.8 * width, -0.2 * width, 0)
+	], null, "yellow").translate(0, 0, -height));
+
 	this.brick[0].translate(-width, -3 * width, 0);
 	this.brick[1].translate(-width, -width, 0);
 	this.brick[2].translate(-width, width, 0);
@@ -191,29 +205,31 @@ Magic.prototype.solve = function(context, inspector, width, clear_screen) {
 		this.draw(context, inspector, width, clear_screen);
 	}.bind(this), 1, 100);
 
-	list.push(function() {
+	list.push(function(step) {
 		var radius = Math.sqrt(this.width * this.width + this.height * this.height);
 		var theta = Math.atan2(this.height, this.width);
+		var begin_angle = theta * (1 - (step - 1) / 5);
+		var end_angle = theta * (1 - step / 5);
 		[0, 7].forEach(function(index) {
-			this.brick[index].translate(0, -2 * (radius - this.width), 0);
+			this.brick[index].translate(0, -2 * radius * (Math.cos(end_angle) - Math.cos(begin_angle)), 0);
 		}, this);
 		[1, 6].forEach(function(index) {
 			this.brick[index]
-				.translate(0, 2 * this.width, this.height)
-				.rotate(new Vertex(-1, 0, 0), theta)
-				.translate(0, -2 * this.width, -this.height);
+				.translate(0, 2 * radius * Math.cos(begin_angle), this.height)
+				.rotate(new Vertex(-1, 0, 0), theta / 5)
+				.translate(0, -2 * radius * Math.cos(end_angle), -this.height);
 		}, this);
 		[2, 5].forEach(function(index) {
 			this.brick[index]
-				.translate(0, -2 * this.width, this.height)
-				.rotate(new Vertex(1, 0, 0), theta)
-				.translate(0, 2 * this.width, -this.height);
+				.translate(0, -2 * radius * Math.cos(begin_angle), this.height)
+				.rotate(new Vertex(1, 0, 0), theta / 5)
+				.translate(0, 2 * radius * Math.cos(end_angle), -this.height);
 		}, this);
 		[3, 4].forEach(function(index) {
-			this.brick[index].translate(0, 2 * (radius - this.width), 0);
+			this.brick[index].translate(0, 2 * radius * (Math.cos(end_angle) - Math.cos(begin_angle)), 0);
 		}, this);
 		this.draw(context, inspector, width, clear_screen);
-	}.bind(this));
+	}.bind(this), 5);
 
 	list.push(function(step) {
 		var begin_step = (step - 1) / 30;
@@ -709,23 +725,28 @@ Magic.prototype.toCube = function(context, inspector, width, clear_screen) {
 	list.push(function(step) {
 		var begin_step = (step - 1) / 5;
 		var end_step = step / 5;
+		var radius = Math.sqrt(this.width * this.width + this.height * this.height);
 		var theta = Math.atan2(this.height, this.width);
 		[0, 1, 6, 7].forEach(function(index) {
-			this.brick[index].translate(0, 0, -3 * this.height / 5);
+			this.brick[index].translate(
+				0,
+				-2 * radius * (Math.cos(theta * (1 - end_step)) - Math.cos(theta * (1 - begin_step))),
+				-3 * this.height / 5
+			);
 		}, this);
 		this.brick[2]
-			.translate(0, 0, this.height * (-1 + 3 * begin_step))
+			.translate(0, -2 * this.width, this.height * (1 + begin_step))
 			.rotate(new Vertex(1, 0, 0), theta / 5)
-			.translate(0, 0, -this.height * (-1 + 3 * end_step));
+			.translate(0, 2 * this.width, -this.height * (1 + end_step));
 		[3, 4].forEach(function(index) {
 			this.brick[index].translate(0, 0, -this.height / 5);
 		}, this);
 		this.brick[5]
-			.translate(0, 0, -this.height * (5 - 3 * begin_step))
+			.translate(0, -2 * this.width, -this.height * (3 - begin_step))
 			.rotate(new Vertex(1, 0, 0), theta * begin_step)
 			.skew("y->z", 2 * this.height / this.width / 5)
 			.rotate(new Vertex(-1, 0, 0), theta * end_step)
-			.translate(0, 0, this.height * (5 - 3 * end_step));
+			.translate(0, 2 * this.width, this.height * (3 - end_step));
 		this.draw(context, inspector, width, clear_screen);
 	}.bind(this), 5);
 
@@ -948,31 +969,20 @@ Magic.prototype.toCube = function(context, inspector, width, clear_screen) {
 		end.push(get_angle2(end));
 		var get_angle3 = function(angle) {
 			if (angle[0] == 0) {
-				return 0;
+				return [0, 0];
 			} else if (angle[0] == Math.PI / 2) {
-				return Math.PI / 4;
+				return [Math.PI / 4, Math.PI];
 			} else {
 				var sin = angle.map(Math.sin);
 				var cos = angle.map(Math.cos);
-				return Math.atan2(1 + sin[1] - cos[2], sin[1] + cos[0] * sin[2]);
+				return [
+					Math.atan2(1 + sin[1] - cos[2], sin[1] + cos[0] * sin[2]),
+					Math.acos(cos[0] - sin[0] * (sin[2] + cos[1]))
+				];
 			}
 		};
-		begin.push(get_angle3(begin));
-		end.push(get_angle3(end));
-		var get_angle4 = function(angle) {
-			var sin = angle.map(Math.sin);
-			var cos = angle.map(Math.cos);
-			var x = cos[0] - sin[0] * (sin[2] + cos[1]);
-			if (x > 1) {
-				return 0;
-			} else if (x < -1) {
-				return Math.PI;
-			} else {
-				return Math.acos(x);
-			}
-		};
-		begin.push(get_angle4(begin));
-		end.push(get_angle4(end));
+		Array.prototype.push.apply(begin, get_angle3(begin));
+		Array.prototype.push.apply(end, get_angle3(end));
 		this.brick[0]
 			.translate(0, 0, -2 * this.width)
 			.rotate(new Vertex(-1, 0, 0), begin[3])
