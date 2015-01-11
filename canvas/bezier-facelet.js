@@ -73,18 +73,23 @@ BezierFacelet.prototype.transform = function(matrix) {
 };
 
 BezierFacelet.prototype.draw = function(context, inspector, width) {
-	var point = this.vertex.map(function(v) {
-		return v.project(inspector);
+	var point = this.vertex.map(function(vertex) {
+		return vertex.project(inspector);
 	});
-	var control_point = this.control.map(function(control_pair) {
-		return [control_pair[0].project(inspector), control_pair[1].project(inspector)];
+	point.push(point[0]);
+	var control = this.control.map(function(pair) {
+		return pair.map(function(point) {
+			return point.project(inspector);
+		});
 	});
 	context.beginPath();
-	context.moveTo(point[point.length - 1].x, point[point.length - 1].y);
-	for (var i = 0; i < point.length; ++i) {
-		context.bezierCurveTo(control_point[i][0].x, control_point[i][0].y,
-				control_point[i][1].x, control_point[i][1].y,
-				point[i].x, point[i].y);
+	context.moveTo(point[0].x, point[0].y);
+	for (var i = 0; i < control.length; ++i) {
+		context.bezierCurveTo(
+			control[i][0].x, control[i][0].y,
+			control[i][1].x, control[i][1].y,
+			point[i + 1].x, point[i + 1].y
+		);
 	}
 	context.closePath();
 	if (this.color_inside) {

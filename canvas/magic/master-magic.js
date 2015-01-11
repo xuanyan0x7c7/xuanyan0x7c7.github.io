@@ -19,10 +19,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(0.1 * width, -width, 0)
 		];
 		var control = [
-			[new Vertex(0.2 * width, -width, 0), new Vertex(0.3 * width, -width, 0)],
 			[new Vertex(0.4 * width, -(1 - 1.4 * k) * width, 0), new Vertex(-(1 - 1.4 * k) * width, 0.4 * width, 0)],
 			[new Vertex(-width, 0.3 * width, 0), new Vertex(-width, 0.2 * width, 0)],
-			[new Vertex(-(1 - 1.1 * k) * width, 0.1 * width, 0), new Vertex(0.1 * width, -(1 - 1.1 * k) * width, 0)]
+			[new Vertex(-(1 - 1.1 * k) * width, 0.1 * width, 0), new Vertex(0.1 * width, -(1 - 1.1 * k) * width, 0)],
+			[new Vertex(0.2 * width, -width, 0), new Vertex(0.3 * width, -width, 0)]
 		];
 		this.brick[index].facelet[0].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, height));
 	}, this);
@@ -35,10 +35,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(0.1 * width, width, 0)
 		];
 		var control = [
-			[new Vertex(0.2 * width, width, -0), new Vertex(0.3 * width, width, -0)],
 			[new Vertex(0.4 * width, (1 - 1.4 * k) * width, 0), new Vertex(-(1 - 1.4 * k) * width, -0.4 * width, 0)],
 			[new Vertex(-width, -0.3 * width, 0), new Vertex(-width, -0.2 * width, 0)],
-			[new Vertex(-(1 - 1.1 * k) * width, -0.1 * width, 0), new Vertex(0.1 * width, (1 - 1.1 * k) * width, 0)]
+			[new Vertex(-(1 - 1.1 * k) * width, -0.1 * width, 0), new Vertex(0.1 * width, (1 - 1.1 * k) * width, 0)],
+			[new Vertex(0.2 * width, width, -0), new Vertex(0.3 * width, width, -0)]
 		];
 		this.brick[index].facelet[0].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, height));
 	}, this);
@@ -51,10 +51,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(-0.1 * width, -width, 0)
 		];
 		var control = [
-			[new Vertex(-0.2 * width, -width, 0), new Vertex(-0.3 * width, -width, 0)],
 			[new Vertex(-0.4 * width, -(1 - 1.4 * k) * width, 0), new Vertex((1 - 1.4 * k) * width, 0.4 * width, 0)],
 			[new Vertex(width, 0.3 * width, 0), new Vertex(width, 0.2 * width, 0)],
-			[new Vertex((1 - 1.1 * k) * width, 0.1 * width, 0), new Vertex(-0.1 * width, -(1 - 1.1 * k) * width, 0)]
+			[new Vertex((1 - 1.1 * k) * width, 0.1 * width, 0), new Vertex(-0.1 * width, -(1 - 1.1 * k) * width, 0)],
+			[new Vertex(-0.2 * width, -width, 0), new Vertex(-0.3 * width, -width, 0)]
 		];
 		this.brick[index].facelet[0].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, height));
 	}, this);
@@ -67,10 +67,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(-0.1 * width, width, 0)
 		];
 		var control = [
-			[new Vertex(-0.2 * width, width, 0), new Vertex(-0.3 * width, width, 0)],
 			[new Vertex(-0.4 * width, (1 - 1.4 * k) * width, 0), new Vertex((1 - 1.4 * k) * width, -0.4 * width, 0)],
 			[new Vertex(width, -0.3 * width, 0), new Vertex(width, -0.2 * width, 0)],
-			[new Vertex((1 - 1.1 * k) * width, -0.1 * width, 0), new Vertex(-0.1 * width, (1 - 1.1 * k) * width, 0)]
+			[new Vertex((1 - 1.1 * k) * width, -0.1 * width, 0), new Vertex(-0.1 * width, (1 - 1.1 * k) * width, 0)],
+			[new Vertex(-0.2 * width, width, 0), new Vertex(-0.3 * width, width, 0)]
 		];
 		this.brick[index].facelet[0].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, height));
 	}, this);
@@ -83,10 +83,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(-0.4 * width, -width, 0)
 		];
 		var control = [
-			[new Vertex(-0.3 * width, -width, 0), new Vertex(-0.2 * width, -width, 0)],
 			[new Vertex(-0.1 * width, -(1 - 0.9 * k) * width, 0), new Vertex(-(1 - 0.9 * k) * width, -0.1 * width, 0)],
 			[new Vertex(-width, -0.2 * width, 0), new Vertex(-width, -0.3 * width, 0)],
-			[new Vertex(-(1 - 0.6 * k) * width, -0.4 * width, 0), new Vertex(-0.4 * width, -(1 - 0.6 * k) * width, 0)]
+			[new Vertex(-(1 - 0.6 * k) * width, -0.4 * width, 0), new Vertex(-0.4 * width, -(1 - 0.6 * k) * width, 0)],
+			[new Vertex(-0.3 * width, -width, 0), new Vertex(-0.2 * width, -width, 0)]
 		];
 		this.brick[index].facelet[1].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, -height));
 	}, this);
@@ -99,10 +99,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(-0.4 * width, width, 0)
 		];
 		var control = [
-			[new Vertex(-0.3 * width, width, 0), new Vertex(-0.2 * width, width, 0)],
 			[new Vertex(-0.1 * width, (1 - 0.9 * k) * width, 0), new Vertex(-(1 - 0.9 * k) * width, 0.1 * width, 0)],
 			[new Vertex(-width, 0.2 * width, 0), new Vertex(-width, 0.3 * width, 0)],
-			[new Vertex(-(1 - 0.6 * k) * width, 0.4 * width, 0), new Vertex(-0.4 * width, (1 - 0.6 * k) * width, 0)]
+			[new Vertex(-(1 - 0.6 * k) * width, 0.4 * width, 0), new Vertex(-0.4 * width, (1 - 0.6 * k) * width, 0)],
+			[new Vertex(-0.3 * width, width, 0), new Vertex(-0.2 * width, width, 0)]
 		];
 		this.brick[index].facelet[1].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, -height));
 	}, this);
@@ -115,10 +115,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(0.4 * width, -width, 0)
 		];
 		var control = [
-			[new Vertex(0.3 * width, -width, 0), new Vertex(0.2 * width, -width, 0)],
 			[new Vertex(0.1 * width, -(1 - 0.9 * k) * width, 0), new Vertex((1 - 0.9 * k) * width, -0.1 * width, 0)],
 			[new Vertex(width, -0.2 * width, 0), new Vertex(width, -0.3 * width, 0)],
-			[new Vertex((1 - 0.6 * k) * width, -0.4 * width, 0), new Vertex(0.4 * width, -(1 - 0.6 * k) * width, 0)]
+			[new Vertex((1 - 0.6 * k) * width, -0.4 * width, 0), new Vertex(0.4 * width, -(1 - 0.6 * k) * width, 0)],
+			[new Vertex(0.3 * width, -width, 0), new Vertex(0.2 * width, -width, 0)]
 		];
 		this.brick[index].facelet[1].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, -height));
 	}, this);
@@ -131,10 +131,10 @@ var MasterMagic = function(width, height) {
 			new Vertex(0.4 * width, width, 0)
 		];
 		var control = [
-			[new Vertex(0.3 * width, width, 0), new Vertex(0.2 * width, width, 0)],
 			[new Vertex(0.1 * width, (1 - 0.9 * k) * width, 0), new Vertex((1 - 0.9 * k) * width, 0.1 * width, 0)],
 			[new Vertex(width, 0.2 * width, 0), new Vertex(width, 0.3 * width, 0)],
-			[new Vertex((1 - 0.6 * k) * width, 0.4 * width, 0), new Vertex(0.4 * width, (1 - 0.6 * k) * width, 0)]
+			[new Vertex((1 - 0.6 * k) * width, 0.4 * width, 0), new Vertex(0.4 * width, (1 - 0.6 * k) * width, 0)],
+			[new Vertex(0.3 * width, width, 0), new Vertex(0.2 * width, width, 0)]
 		];
 		this.brick[index].facelet[1].push(new BezierFacelet(vertex, control, null, "red").translate(0, 0, -height));
 	}, this);
