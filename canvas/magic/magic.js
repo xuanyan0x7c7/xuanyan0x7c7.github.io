@@ -198,8 +198,8 @@ Magic.prototype.draw = function(context, inspector, width, clear_screen) {
 	});
 };
 
-Magic.prototype.solve = function(context, inspector, width, clear_screen, callback) {
-	var list = new AnimationList(this, callback);
+Magic.prototype.solve = function(context, inspector, width, clear_screen) {
+	var list = new AnimationList(this);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);
@@ -458,8 +458,8 @@ Magic.prototype.solve = function(context, inspector, width, clear_screen, callba
 	return list;
 };
 
-Magic.prototype.solveBeginner = function(context, inspector, width, clear_screen, callback) {
-	var list = new AnimationList(this, callback);
+Magic.prototype.solveBeginner = function(context, inspector, width, clear_screen) {
+	var list = new AnimationList(this);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);
@@ -669,8 +669,8 @@ Magic.prototype.solveBeginner = function(context, inspector, width, clear_screen
 	return list;
 };
 
-Magic.prototype.toCube = function(context, inspector, width, clear_screen, callback) {
-	var list = new AnimationList(this, callback);
+Magic.prototype.toCube = function(context, inspector, width, clear_screen) {
+	var list = new AnimationList(this);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);

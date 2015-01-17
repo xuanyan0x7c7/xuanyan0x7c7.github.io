@@ -26,7 +26,6 @@ Animation.prototype.animate = function(animation_list, step) {
 				animation_list.timeout = null;
 				animation_list.current = null;
 				animation_list.step = null;
-				animation_list.callback();
 			}
 			this.animation(step);
 			return;
@@ -38,13 +37,12 @@ Animation.prototype.animate = function(animation_list, step) {
 	}.bind(this))();
 };
 
-var AnimationList = function(animation_object, callback) {
+var AnimationList = function(animation_object) {
 	this.animation_object = animation_object;
 	this.list = [new Animation()];
 	this.timeout = null;
 	this.current = null;
 	this.step = null;
-	this.callback = callback || function() {};
 };
 
 AnimationList.prototype.animate = function() {

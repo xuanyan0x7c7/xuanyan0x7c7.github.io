@@ -202,8 +202,8 @@ MasterMagic.prototype.draw = function(context, inspector, width, clear_screen) {
 	});
 };
 
-MasterMagic.prototype.solve = function(context, inspector, width, clear_screen, callback) {
-	var list = new AnimationList(this, callback);
+MasterMagic.prototype.solve = function(context, inspector, width, clear_screen) {
+	var list = new AnimationList(this);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);
@@ -569,8 +569,8 @@ MasterMagic.prototype.solve = function(context, inspector, width, clear_screen, 
 	return list;
 };
 
-MasterMagic.prototype.solveBeginner = function(context, inspector, width, clear_screen, callback) {
-	var list = new AnimationList(this, callback);
+MasterMagic.prototype.solveBeginner = function(context, inspector, width, clear_screen) {
+	var list = new AnimationList(this);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);

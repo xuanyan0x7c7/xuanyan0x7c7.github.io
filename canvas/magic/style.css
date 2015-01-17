@@ -29,14 +29,10 @@ canvas {
 	right: 0;
 }
 
-.desktop #zoom-in, .desktop #zoom-out {
+#zoom-in, #zoom-out {
 	width: 5em;
 }
 
-.desktop #reset-view {
+#reset-view {
 	width: 10em;
-}
-
-.touch #zoom-in, .touch #zoom-out {
-	display: none;
 }
