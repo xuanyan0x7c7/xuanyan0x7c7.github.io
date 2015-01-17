@@ -96,7 +96,7 @@ BezierFacelet.prototype.draw = function(context, inspector, width) {
 		context.fillStyle = this.color_inside;
 		context.fill();
 	}
-	if (this.color_bound && context.lineWidth) {
+	if (this.color_bound && width) {
 		context.lineWidth = width;
 		context.strokeStyle = this.color_bound;
 		context.stroke();

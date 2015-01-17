@@ -58,12 +58,12 @@ Polygon.prototype.draw = function(context, inspector, width) {
 		context.lineTo(p.x, p.y);
 	});
 	context.closePath();
-	context.lineWidth = width || 0;
 	if (this.color_inside) {
 		context.fillStyle = this.color_inside;
 		context.fill();
 	}
-	if (this.color_bound) {
+	if (this.color_bound && width) {
+		context.lineWidth = width;
 		context.strokeStyle = this.color_bound;
 		context.stroke();
 	}

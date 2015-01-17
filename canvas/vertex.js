@@ -66,31 +66,41 @@ Vertex.prototype.transform = function(matrix) {
 	return this;
 };
 
-Vertex.prototype.innerProduct = function(other) {
-	return this.x * other.x + this.y * other.y + this.z * other.z;
+Vertex.innerProduct = function(v1, v2) {
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 };
 
-Vertex.prototype.crossProduct = function(other) {
-	return new Vertex(this.y * other.z - this.z * other.y,
-			this.z * other.x - this.x * other.z,
-			this.x * other.y - this.y * other.x);
+Vertex.crossProduct = function(v1, v2) {
+	return new Vertex(v1.y * v2.z - v1.z * v2.y,
+			v1.z * v2.x - v1.x * v2.z,
+			v1.x * v2.y - v1.y * v2.x);
 };
 
 Vertex.prototype.project = function(inspector) {
-	var eye = inspector.eye;
-	var k1 = eye.innerProduct(eye);
-	var k2 = this.innerProduct(eye);
-	var vector = inspector.origin.getVector(this).scale(k1 / (k1 - k2));
-	return {
-		x: vector.innerProduct(inspector.axis_x),
-		y: vector.innerProduct(inspector.axis_y)
-	};
+	var eye = inspector.origin.getVector(inspector.eye);
+	var length = eye.length;
+	var near = inspector.near;
+	var far = inspector.far;
+	var vector = inspector.origin.getVector(this);
+	var k1 = length * length;
+	var k2 = k1 - Vertex.innerProduct(vector, eye);
+	vector.scale(k1 / k2 * near / length);
+	var x = Vertex.innerProduct(vector, inspector.axis_x);
+	var y = Vertex.innerProduct(vector, inspector.axis_y);
+	var z;
+	if (far == Infinity) {
+		z = 2 * near * length / k2 - 1;
+	} else {
+		z = (2 * far * near * length / k2 - (far + near)) /
+			(far - near);
+	}
+	return new Vertex(x, y, z);
 };
 
-Vertex.prototype.distance = function(other) {
-	var dx = this.x - other.x;
-	var dy = this.y - other.y;
-	var dz = this.z - other.z;
+Vertex.distance = function(v1, v2) {
+	var dx = v1.x - v2.x;
+	var dy = v1.y - v2.y;
+	var dz = v1.z - v2.z;
 	return Math.sqrt(dx * dx + dy * dy + dz * dz);
 };
 
@@ -115,14 +125,13 @@ Vertex.prototype.getVector = function(other) {
 
 Vertex.prototype.toString = function() {
 	return "(" + this.x + ", " + this.y + ", " + this.z + ")";
-}
+};
 
 Vertex.linear_combination = function() {
-	var sum = {x: 0, y: 0, z: 0};
-	var args = arguments.length >>> 1;
-	for (var i = 0; i < args; ++i) {
-		var v = arguments[2 * i];
-		var k = arguments[2 * i + 1];
+	var sum = new Vertex();
+	for (var i = 0; i < arguments.length; ++i) {
+		var v = arguments[i][0];
+		var k = arguments[i][1];
 		sum.x += k * v.x;
 		sum.y += k * v.y;
 		sum.z += k * v.z;

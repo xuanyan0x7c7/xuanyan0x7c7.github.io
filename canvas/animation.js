@@ -12,30 +12,39 @@ var Animation = function(animation, steps, delay) {
 
 Animation.delay = 20;
 
-Animation.prototype.animate = function(animation_list) {
-	var step = 0;
+Animation.prototype.animate = function(animation_list, step) {
+	step = step || 0;
 	(function run() {
 		if (++step == this.steps) {
 			if (this.next) {
+				animation_list.current = this.next;
+				animation_list.step = 0;
 				animation_list.timeout = setTimeout(function() {
 					this.next.animate(animation_list);
 				}.bind(this), this.delay);
 			} else {
 				animation_list.timeout = null;
+				animation_list.current = null;
+				animation_list.step = null;
+				animation_list.callback();
 			}
 			this.animation(step);
 			return;
 		} else {
 			animation_list.timeout = setTimeout(run.bind(this), this.delay);
+			animation_list.step = step;
 			this.animation(step);
 		}
 	}.bind(this))();
 };
 
-var AnimationList = function(animation_object) {
-	this.animation_object = animation_object || null;
+var AnimationList = function(animation_object, callback) {
+	this.animation_object = animation_object;
 	this.list = [new Animation()];
 	this.timeout = null;
+	this.current = null;
+	this.step = null;
+	this.callback = callback || function() {};
 };
 
 AnimationList.prototype.animate = function() {
@@ -43,13 +52,16 @@ AnimationList.prototype.animate = function() {
 };
 
 AnimationList.prototype.push = function(animation, steps, delay) {
-	if (animation instanceof Animation) {
-		this.list[this.list.length - 1].next = animation;
-		this.list.push(animation);
-	} else {
-		var new_animation = new Animation(animation, steps, delay);
-		this.list[this.list.length - 1].next = new_animation;
-		this.list.push(new_animation);
+	if (!(animation instanceof Animation)) {
+		animation = new Animation(animation, steps, delay);
+	}
+	this.list[this.list.length - 1].next = animation;
+	this.list.push(animation);
+};
+
+AnimationList.prototype.play = function() {
+	if (this.current) {
+		this.current.animate(this, this.step);
 	}
 };
 

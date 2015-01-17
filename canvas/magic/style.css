@@ -2,6 +2,12 @@ body {
 	overflow: hidden;
 }
 
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 .controls {
 	position: absolute;
 	z-index: 1;
@@ -23,8 +29,14 @@ body {
 	right: 0;
 }
 
-canvas {
-	position: absolute;
-	top: 0;
-	left: 0;
+.desktop #zoom-in, .desktop #zoom-out {
+	width: 5em;
+}
+
+.desktop #reset-view {
+	width: 10em;
+}
+
+.touch #zoom-in, .touch #zoom-out {
+	display: none;
 }

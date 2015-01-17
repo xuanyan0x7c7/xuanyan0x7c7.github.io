@@ -9,13 +9,29 @@ Facelet.prototype.clone = function() {
 	facelet.slice = this.slice.map(function(slice) {
 		return slice.clone();
 	});
+	for (var i = 0; i < this.slice.length; ++i) {
+		facelet[i] = facelet.slice[i];
+	}
 	return facelet;
 };
 
 Facelet.prototype.push = function(slice) {
 	this.slice.push(slice);
+	this[this.slice.length - 1] = this.slice[this.slice.length - 1];
 	return this;
 };
+
+Facelet.prototype.pop = function() {
+	var slice = this.slice.pop();
+	delete this[this.slice.length];
+	return this.slice;
+};
+
+Object.defineProperty(Facelet.prototype, "length", {
+	get: function() {
+		return this.slice.length;
+	}
+});
 
 Facelet.prototype.translate = function(x, y, z) {
 	this.center.translate(x, y, z);
@@ -57,11 +73,11 @@ Facelet.prototype.skew = function(direction, ratio) {
 		axis_y = new Vertex(-this.normal.z, 0, this.normal.x);
 	} else {
 		axis_x = new Vertex(0, -this.normal.z, this.normal.y).normalize();
-		axis_y = this.normal.crossProduct(axis_x).normalize();
+		axis_y = Vertex.crossProduct(this.normal, axis_x).normalize();
 	}
 	axis_x.skew(direction, ratio);
 	axis_y.skew(direction, ratio);
-	this.normal = axis_x.crossProduct(axis_y);
+	this.normal = Vertex.crossProduct(axis_x, axis_y).normalize();
 	return this;
 };
 
@@ -79,11 +95,11 @@ Facelet.prototype.transform = function(matrix) {
 		axis_y = new Vertex(-this.normal.z, 0, this.normal.x);
 	} else {
 		axis_x = new Vertex(0, -this.normal.z, this.normal.y).normalize();
-		axis_y = this.normal.crossProduct(axis_x).normalize();
+		axis_y = Vertex.crossProduct(this.normal, axis_x).normalize();
 	}
 	axis_x.transform(matrix);
 	axis_y.transform(matrix);
-	this.normal = axis_x.crossProduct(axis_y);
+	this.normal = Vertex.crossProduct(axis_x, axis_y).normalize();
 	return this;
 };
 

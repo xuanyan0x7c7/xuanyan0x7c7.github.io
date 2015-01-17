@@ -43,20 +43,22 @@ window.addEventListener("load", function() {
 		}
 	];
 
+	if (document.hasOwnProperty("ontouchstart")) {
+		document.documentElement.classList.add("touch");
+	} else {
+		document.documentElement.classList.add("desktop");
+	}
+
 	var canvas = document.getElementById("magic");
 	var resize = function() {
 		canvas.width = document.documentElement.clientWidth;
 		canvas.height = document.documentElement.clientHeight;
-		repaint();
-	};
-	var repaint = function() {
 		current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
 	};
 	this.addEventListener("resize", resize, false);
-	var context = canvas.getContext("2d");
 
-	var inspector = new Inspector(new Vertex(8, 0, 6));
-	inspector.near = 1;
+	var context = canvas.getContext("2d");
+	var inspector = new Inspector(new Vertex(8, 0, 6), new Vertex(), new Vertex(0, 0, 1));
 	var get_stroke_width = function() {
 		return 2 / Math.min(canvas.width, canvas.height);
 	};
@@ -67,12 +69,20 @@ window.addEventListener("load", function() {
 		context.setTransform(scale, 0, 0, -scale, canvas.width / 2, canvas.height / 2);
 	};
 
+	var play_button = document.getElementById("play");
+	var stopped = false;
+	var paused = false;
+
 	var animation = {};
 	magics.forEach(function(magic) {
 		animation[magic.value] = function() {
 			return magic.animation.call(magic.create(), context, function() {
 				return inspector;
-			}, get_stroke_width, clear_screen);
+			}, get_stroke_width, clear_screen, function() {
+				stopped = true;
+				paused = false;
+				play_button.setAttribute("disabled", "disabled");
+			});
 		};
 	});
 
@@ -87,38 +97,85 @@ window.addEventListener("load", function() {
 	resize();
 	current_animation.animate();
 
-	select.addEventListener("change", function(event) {
-		current_animation.stop();
-		current_animation = animation[this.value]();
-		current_animation.animate();
-	}, false);
+	(function() {
+		var change = function() {
+			current_animation.stop();
+			current_animation = animation[select.value]();
+			current_animation.animate();
+			stopped = false;
+			paused = false;
+			play_button.innerHTML = "Pause";
+			play_button.removeAttribute("disabled");
+		};
 
-	document.getElementById("replay").addEventListener("click", function() {
-		current_animation.stop();
-		current_animation = animation[select.value]();
-		current_animation.animate();
-	}, false);
+		var pause = function() {
+			if (!stopped) {
+				if (paused) {
+					current_animation.play();
+					paused = false;
+					play_button.innerHTML = "Pause";
+				} else {
+					current_animation.stop();
+					paused = true;
+					play_button.innerHTML = "Play";
+				}
+			}
+		};
+
+		var doubletap = function() {
+			var tap_count = 0;
+			var tap_start = null;
+			var evt = new UIEvent("doubletap");
+			this.addEventListener("touchstart", function(event) {
+				if (event.targetTouches.length == 1) {
+					var time = Date.now();
+					if (!tap_start || time - tap_start >= 200) {
+						tap_count = 0;
+					}
+					tap_start = time;
+				} else {
+					tap_start = null;
+				}
+			}, false);
+			this.addEventListener("touchend", function() {
+				if (event.targetTouches.length == 0) {
+					var time = Date.now();
+					if (tap_start && time - tap_start < 150) {
+						if (++tap_count != 2) {
+							tap_start = time;
+							return;
+						}
+						this.dispatchEvent(evt);
+						tap_count = 0;
+					}
+				}
+				tap_start = null;
+			}, false);
+		};
+
+		select.addEventListener("change", change, false);
+		document.getElementById("replay").addEventListener("click", change, false);
+		play_button.addEventListener("click", pause, false);
+		if (document.documentElement.classList.contains("desktop")) {
+			canvas.addEventListener("dblclick", pause, false);
+		}
+		if (document.documentElement.classList.contains("touch")) {
+			doubletap.call(canvas);
+			canvas.addEventListener("doubletap", pause, false);
+		}
+	})();
 
 	document.getElementById("reset-view").addEventListener("click", function() {
-		inspector = new Inspector(new Vertex(8, 0, 6));
-		inspector.near = 1;
+		inspector = new Inspector(new Vertex(8, 0, 6), new Vertex(), new Vertex(0, 0, 1));
 		current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
 	}, false);
 
-	var get_mouse_position = function(event) {
-		return {x: event.clientX, y: event.clientY};
-	};
-	var get_touch_positions = function(event) {
-		return Array.prototype.map.call(event.targetTouches, function(t) {
-			return {x: t.clientX, y: t.clientY};
-		});
-	};
 	var inspector_rotate = function(x, y) {
 		if (x == 0 && y == 0) {
 			return;
 		}
 		var angle = Math.sqrt(x * x + y * y) / Math.min(canvas.width, canvas.height) * Math.PI;
-		var axis = inspector.axis_y.clone().scale(x).getVector(inspector.axis_x.clone().scale(-y));
+		var axis = Vertex.linear_combination([inspector.axis_y, -x], [inspector.axis_x, -y]);
 		inspector.rotate(axis, angle);
 	};
 
@@ -166,52 +223,64 @@ window.addEventListener("load", function() {
 		return hull.slice(0, top + 1);
 	};
 
-	(function() {
-		mouse = null;
-		canvas.addEventListener("mousedown", function(event) {
-			mouse = get_mouse_position(event);
-		}, false);
-		canvas.addEventListener("mouseup", function() {
+	if (document.documentElement.classList.contains("desktop")) {
+		(function() {
 			mouse = null;
-		}, false);
-		canvas.addEventListener("mousemove", function(event) {
-			if (!mouse) {
-				return;
-			}
-			var pos = get_mouse_position(event);
-			inspector_rotate(pos.x - mouse.x, pos.y - mouse.y);
+			canvas.addEventListener("mousedown", function(event) {
+				mouse = {x: event.clientX, y: event.clientY};
+			}, false);
+			canvas.addEventListener("mouseup", function() {
+				mouse = null;
+			}, false);
+			canvas.addEventListener("mousemove", function(event) {
+				if (!mouse) {
+					return;
+				}
+				var pos = {x: event.clientX, y: event.clientY};
+				inspector_rotate(pos.x - mouse.x, pos.y - mouse.y);
+				current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
+				mouse = pos;
+			}, false);
+		})();
+		document.getElementById("zoom-in").addEventListener("click", function() {
+			inspector.scale(1.05);
 			current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
-			mouse = pos;
 		}, false);
-	})();
+		document.getElementById("zoom-out").addEventListener("click", function() {
+			inspector.scale(1 / 1.05);
+			current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
+		}, false);
+	}
 
-	(function() {
-		var touch = [];
-		canvas.addEventListener("touchstart", function(event) {
-			touch = get_touch_positions(event);
-		}, false);
-		canvas.addEventListener("touchend", function(event) {
-			touch = get_touch_positions(event);
-		}, false);
-		canvas.addEventListener("touchmove", function(event) {
-			var pos = get_touch_positions(event);
-			if (touch.length == pos.length) {
-				if (touch.length == 1) {
-					inspector_rotate(pos[0].x - touch[0].x, pos[0].y - touch[0].y);
-					current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
-				} else if (touch.length == 2) {
-					var old_distance = distance(touch[0], touch[1]);
-					var new_distance = distance(pos[0], pos[1]);
-					inspector.scale(new_distance / old_distance);
-					current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
-				} else if (touch.length >= 3) {
-					var old_area = area(convex_hull(touch));
-					var new_area = area(convex_hull(pos));
-					inspector.scale(Math.sqrt(new_area / old_area));
+	if (document.documentElement.classList.contains("touch")) {
+		(function() {
+			var touch = [];
+			canvas.addEventListener("touchstart", function(event) {
+				touch = Array.prototype.map.call(event.targetTouches, function(t) {
+					return {x: t.clientX, y: t.clientY};
+				});
+			}, false);
+			canvas.addEventListener("touchend", function(event) {
+				touch = Array.prototype.map.call(event.targetTouches, function(t) {
+					return {x: t.clientX, y: t.clientY};
+				});
+			}, false);
+			canvas.addEventListener("touchmove", function(event) {
+				var pos = Array.prototype.map.call(event.targetTouches, function(t) {
+					return {x: t.clientX, y: t.clientY};
+				});
+				if (touch.length == pos.length && touch.length > 0) {
+					if (touch.length == 1) {
+						inspector_rotate(pos[0].x - touch[0].x, pos[0].y - touch[0].y);
+					} else if (touch.length == 2) {
+						inspector.scale(distance(pos[0], pos[1]) / distance(touch[0], touch[1]));
+					} else {
+						inspector.scale(Math.sqrt(area(convex_hull(pos)) / area(convex_hull(touch))));
+					}
 					current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
 				}
-			}
-			touch = pos;
-		}, false);
-	})();
+				touch = pos;
+			}, false);
+		})();
+	}
 }, false);

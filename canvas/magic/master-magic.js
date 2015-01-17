@@ -186,8 +186,8 @@ MasterMagic.prototype.draw = function(context, inspector, width, clear_screen) {
 	this.brick.forEach(function(brick) {
 		brick.facelet.forEach(function(facelet) {
 			var vector = facelet.center.getVector(inspector.eye);
-			if (facelet.normal.innerProduct(vector) >= 0) {
-				var distance = vector.innerProduct(normal);
+			if (Vertex.innerProduct(facelet.normal, vector) >= 0) {
+				var distance = Vertex.innerProduct(vector, normal);
 				if (distance >= inspector.near && distance <= inspector.far) {
 					all_facelet.push(facelet);
 				}
@@ -195,15 +195,15 @@ MasterMagic.prototype.draw = function(context, inspector, width, clear_screen) {
 		});
 	});
 	all_facelet.sort(function(x, y) {
-		return inspector.eye.distance(y.center) - inspector.eye.distance(x.center);
+		return Vertex.distance(inspector.eye, y.center) - Vertex.distance(inspector.eye, x.center);
 	});
 	all_facelet.forEach(function(facelet) {
 		facelet.draw(context, inspector, width);
 	});
 };
 
-MasterMagic.prototype.solve = function(context, inspector, width, clear_screen) {
-	var list = new AnimationList(this);
+MasterMagic.prototype.solve = function(context, inspector, width, clear_screen, callback) {
+	var list = new AnimationList(this, callback);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);
@@ -569,8 +569,8 @@ MasterMagic.prototype.solve = function(context, inspector, width, clear_screen) 
 	return list;
 };
 
-MasterMagic.prototype.solveBeginner = function(context, inspector, width, clear_screen) {
-	var list = new AnimationList(this);
+MasterMagic.prototype.solveBeginner = function(context, inspector, width, clear_screen, callback) {
+	var list = new AnimationList(this, callback);
 
 	list.push(function() {
 		this.draw(context, inspector, width, clear_screen);
