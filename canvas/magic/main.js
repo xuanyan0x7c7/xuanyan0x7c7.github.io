@@ -43,7 +43,15 @@ window.addEventListener("load", function() {
 		}
 	];
 
-	var canvas = document.getElementById("magic");
+	var $ = function(selector, element) {
+		return (element || document).querySelector(selector);
+	};
+
+	var $$ = function(selector, element) {
+		return (element || document).querySelectorAll(selector);
+	};
+
+	var canvas = $("#magic");
 	var resize = function() {
 		canvas.width = document.documentElement.clientWidth;
 		canvas.height = document.documentElement.clientHeight;
@@ -63,7 +71,7 @@ window.addEventListener("load", function() {
 		context.setTransform(scale, 0, 0, -scale, canvas.width / 2, canvas.height / 2);
 	};
 
-	var play_button = document.getElementById("play");
+	var play_button = $("#play");
 	var stopped = false;
 	var paused = false;
 
@@ -82,7 +90,7 @@ window.addEventListener("load", function() {
 		};
 	});
 
-	var select = document.getElementById("select");
+	var select = $("#select");
 	magics.forEach(function(magic) {
 		select.options.add(new Option(magic.text, magic.value));
 		if (magic.init_display === true) {
@@ -151,13 +159,13 @@ window.addEventListener("load", function() {
 		doubletap.call(canvas);
 
 		select.addEventListener("change", change, false);
-		document.getElementById("replay").addEventListener("click", change, false);
+		$("#replay").addEventListener("click", change, false);
 		play_button.addEventListener("click", pause, false);
 		canvas.addEventListener("dblclick", pause, false);
 		canvas.addEventListener("doubletap", pause, false);
 	})();
 
-	document.getElementById("reset-view").addEventListener("click", function() {
+	$("#reset-view").addEventListener("click", function() {
 		inspector = new Inspector(new Vertex(8, 0, 6), new Vertex(), new Vertex(0, 0, 1));
 		current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
 	}, false);
@@ -233,11 +241,11 @@ window.addEventListener("load", function() {
 			mouse = pos;
 		}, false);
 	})();
-	document.getElementById("zoom-in").addEventListener("click", function() {
+	$("#zoom-in").addEventListener("click", function() {
 		inspector.scale(1.05);
 		current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
 	}, false);
-	document.getElementById("zoom-out").addEventListener("click", function() {
+	$("#zoom-out").addEventListener("click", function() {
 		inspector.scale(1 / 1.05);
 		current_animation.animation_object.draw(context, inspector, get_stroke_width, clear_screen);
 	}, false);
